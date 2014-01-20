@@ -1,9 +1,13 @@
 import envoy
 import boto
 import requests
+import os
+import time
 from requests_oauthlib import OAuth2Session
 from boto.s3.connection import Location
 from boto.s3.lifecycle import Lifecycle, Transition, Rule
+from watchdog.observers import Observer  
+from watchdog.events import PatternMatchingEventHandler  
 
 connected = False
 connected_aws = False
@@ -93,7 +97,7 @@ def create_user(username):
 def get_user(username):
     return ''
 
-def start_stream(file_path, stream_name=None):
+def start_stream(file_path, stream_name=None, private=False):
 
     stream_video(file_path)
     return ''
@@ -108,14 +112,46 @@ def stop_stream():
 ### FFMPEG
 ####################
 
+class SegmentHandler(PatternMatchingEventHandler):
+    patterns = ["*.ts", "*.m3u8"]
+
+    def process(self, event):
+        """
+        event.event_type 
+            'modified' | 'created' | 'moved' | 'deleted'
+        event.is_directory
+            True | False
+        event.src_path
+            path/to/observed/file
+        """
+        # the file will be processed there
+        print event.src_path, event.event_type  # print now only for degug
+
+    def on_modified(self, event):
+        pass
+
+    def on_created(self, event):
+        self.process(event)
+
 def stream_video(video_path):
 
-    args =  '-v 9 -loglevel 99 -re -i %s -an ' + \
-            '-c:v libx264 -b:v 128k -vpre ipod320 \ ' + \
-            ' -flags -global_header -map 0 -f segment -segment_time 4 ' + \
-            ' -segment_list test.m3u8 -segment_format mpegts stream.ts'
+    create_working_directory()
+
+    if '.avi' in video_path:
+        args = "-i %s  -vcodec h264 -b 2000k -acodec libfaac -ab 128k -f hls ./.kickflip/index.m3u8"
+    else:
+        args = "-i %s -f hls -codec copy ./.kickflip/index.m3u8"
     args = args % video_path
-    process = envoy.run ('ffmpeg ' + args)
+
+    print 'ffmpeg', args
+
+    observer = Observer()
+    observer.schedule(SegmentHandler(), path='./.kickflip')
+    
+    observer.start()
+    time.sleep(3) # This is a fucking hack.
+    process = envoy.run('ffmpeg ' + args)
+    observer.stop()
 
     upload_file(video_path)
     return ''
@@ -125,4 +161,13 @@ def stream_video(video_path):
 ####################
 
 def upload_files(streamable_files_directory):
+    return True
+
+###################
+### Misc
+###################
+
+def create_working_directory():
+    if not os.path.exists('./.kickflip'):
+        os.makedirs('./.kickflip')
     return True

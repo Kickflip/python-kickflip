@@ -5,7 +5,7 @@ It's a Kickflip library and command line client!
 
 ## Command Line Usage
 
-0. First, you'll need a [Kickflip](http://kickflip.io) account and an application.
+0. First, you'll need a [Kickflip](http://kickflip.io) account and an application. You'll also need a recent version of _ffmpeg_ installed.
 
 0. Install *kickflip*
 

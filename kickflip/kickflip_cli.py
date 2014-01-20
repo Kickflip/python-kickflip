@@ -12,14 +12,16 @@ import kickflip
 def main():
     parser = argparse.ArgumentParser(description='Kickflip. Stream video directly to Kickflip.io.\n')
     parser.add_argument('file_path', metavar='U', type=str,
-                   help='Path to the file to stream')
+                        help='Path to the file to stream')
+    parser.add_argument('-k', '--keys', action='store_true', default=False,
+                        help='Read keys from the command line.')
 
     args = parser.parse_args()
     vargs = vars(args)
     if not any(vargs.values()):
         parser.error('Please supply a file to stream!')
 
-    read_keys_cli = False
+    read_keys_cli = vargs['keys']
     client_id, client_secret = load_keys(read_keys_cli)
     user_access_key, user_access_secret_key = load_user(getpass.getuser())
 
