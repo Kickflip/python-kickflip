@@ -92,5 +92,13 @@ def stop_stream():
 ####################
 
 def stream_video(video_path):
+
+    args =  '-v 9 -loglevel 99 -re -i %s -an ' + 
+            '-c:v libx264 -b:v 128k -vpre ipod320 \ ' +
+            ' -flags -global_header -map 0 -f segment -segment_time 4 ' +
+            ' -segment_list test.m3u8 -segment_format mpegts stream.ts'
+    args = args % video_path
+    process = envoy.run ('ffmpeg ' + args)
+
     upload_file(video_path)
     return ''
