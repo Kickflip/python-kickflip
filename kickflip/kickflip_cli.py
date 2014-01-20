@@ -33,7 +33,11 @@ def main():
 def load_keys(read_cli=False):
 
     resources.init('Kickflip', 'Kickflip')
+    
     config_json = resources.user.read('config.json')
+    if not config_json:
+        resources.user.write('config.json', json.dumps({}, sort_keys=True))
+        config_json = resources.user.read('config.json')
 
     settings = json.loads(config_json)
     if not settings.has_key('client_id') or read_cli:
