@@ -23,13 +23,14 @@ def main():
 
     read_keys_cli = vargs['keys']
     client_id, client_secret = load_keys(read_keys_cli)
-    user_access_key, user_access_secret_key = load_user(getpass.getuser())
+    username, user_access_key, user_secret_access_key = load_or_create_user(getpass.getuser())
 
     file_path = vargs['file_path']
     puts(colored.green('Streaming') + ': ' + file_path)
 
-    #kickflip.set_keys(client_id, client_secret)
-    #kickflip.set_user(resources.user)
+    kickflip.set_keys(client_id, client_secret)
+    #kickflip.connect()
+    #kickflip.set_user(username, user_access_key, user_secret_access_key)
     kickflip.start_stream(file_path)
 
 def load_keys(read_cli=False):
@@ -49,7 +50,7 @@ def load_keys(read_cli=False):
 
     return settings['client_id'], settings['client_secret']
 
-def load_user(username):
+def load_or_create_user(username):
     resources.init('Kickflip', 'Kickflip')
     config_json = resources.user.read('config.json')
     if not config_json:
@@ -66,7 +67,7 @@ def load_user(username):
         settings['user_secret_access_key'] = 1234
         resources.user.write('config.json', json.dumps(settings, sort_keys=True))
 
-    return settings['user_access_key'], settings['user_secret_access_key']
+    return settings['username'], settings['user_access_key'], settings['user_secret_access_key']
 
 if __name__ == '__main__':
     try:
