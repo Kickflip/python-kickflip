@@ -31,13 +31,13 @@ KICKFLIP_CLIENT_ID = ''
 KICKFLIP_CLIENT_SECRET = ''
 
 KICKFLIP_APP_NAME = 'pythonclient'
-KICKFLIP_USER_NAME = 'pythonclient-rich-jones'
+KICKFLIP_USER_NAME = 'pythonclient-BIGGERDADDY'
 KICKFLIP_ACCESS_TOKEN = ''
 KICKFLIP_SECRET_ACCESS_TOKEN = ''
 
 # Amazon
-AWS_ACCESS_KEY = ''
-AWS_SECRET_ACCESS_KEY = ''
+AWS_ACCESS_KEY = 'AKIAIKHUMF3TPZ7PHTKA'
+AWS_SECRET_ACCESS_KEY = '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'
 
 s3 = None
 
@@ -211,17 +211,13 @@ def upload_file(file_path):
 
     bucket = None
     s3 = boto.connect_s3(AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY)
-    bucket = s3.get_bucket(KICKFLIP_APP_NAME, validate=False)
+    bucket = s3.get_bucket(KICKFLIP_APP_NAME)#, validate=False)
 
     k = Key(bucket)
     head, tail = os.path.split(file_path)
-    k.key = KICKFLIP_APP_NAME + "/"  + KICKFLIP_USER_NAME + "/" + tail
+    k.key = KICKFLIP_USER_NAME + "/" + tail
 
-    def percent_cb(complete, total):
-        sys.stdout.write('.')
-        sys.stdout.flush()
-
-    k.set_contents_from_filename(file_path, cb=percent_cb, num_cb=10)
+    k.set_contents_from_filename(file_path)
     if '.m3u8' in file_path:
         print k.generate_url(expires_in=300)
 
