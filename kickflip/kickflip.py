@@ -218,6 +218,7 @@ def upload_file(file_path):
     k.key = KICKFLIP_USER_NAME + "/" + tail
 
     k.set_contents_from_filename(file_path)
+    k.set_acl('public-read')
     if '.m3u8' in file_path:
         print k.generate_url(expires_in=300)
 
