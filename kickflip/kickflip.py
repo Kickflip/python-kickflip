@@ -8,6 +8,7 @@ import sys
 import time
 import random
 import string
+from oauthlib.oauth2 import MobileApplicationClient
 from requests_oauthlib import OAuth2Session
 from boto.s3.connection import Location
 from boto.s3.lifecycle import Lifecycle, Transition, Rule
@@ -23,6 +24,7 @@ from m3u8 import M3U8
 
 connected = False
 connected_aws = False
+kickflip_session = None
 
 # URLs
 KICKFLIP_BASE_URL = 'https://funkcity.ngrok.com/'
@@ -82,20 +84,20 @@ def upload_file(filename):
 ### Kickflip Auth
 ###################
 
-def connect(client_id, client_secret):
+def connect():
     global connected
+    global kickflip_session
     global KICKFLIP_CLIENT_ID
     global KICKFLIP_CLIENT_SECRET
-
-    set_keys(client_id, client_secret)
+    global KICKFLIP_API_URL
 
     if not connected:
 
-        kickflip_session = OAuth2Session(KICKFLIP_CLIENT_ID, token=KICKFLIP_CLIENT_SECRET)
-        kickflip_session.authorization_url(KICKFLIP_BASE_URL + 'o/authorize/')
-        import pdb
-        pdb.set_trace()
-
+        response = requests.post('https://funkcity.ngrok.com/o/token/', {'grant_type': 'client_credentials', 'client_id': KICKFLIP_CLIENT_ID, 'client_secret': KICKFLIP_CLIENT_SECRET})
+        token = response.json()
+        client = MobileApplicationClient(KICKFLIP_CLIENT_ID)
+        kickflip_session = OAuth2Session(KICKFLIP_CLIENT_ID, client=client, token=token)
+        kickflip_session.get(KICKFLIP_API_URL + 'hello/')
         connected = True
 
     return connected
@@ -125,16 +127,13 @@ def get_account_status(username):
     return ''
 
 def create_user(username):
-
-
-
-
     return ''
 
 def get_user(username):
     return ''
 
 def start_stream(file_path, stream_name=None, private=False):
+    connect()
     stream_video(file_path)
     return ''
 
