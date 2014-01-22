@@ -4,10 +4,6 @@ HEADER = '''#EXTM3U
 #EXT-X-MEDIA-SEQUENCE:%s
 '''
 
-BODY = '''
-#EXTINF:%s,
-testIZZ3C3.ts'''
-
 FOOTER = '''
 EXT-X-ENDLIST'''
 
@@ -45,3 +41,22 @@ class M3U8:
                 if not have_file:
                     add_file(name, length)
 
+    def add_from_file(file_path):
+
+        with open(file_path) as f:
+            contents = f.read()
+            self.add_from_string(contents)
+
+        return True
+
+    def dump_to_file(file_path):
+
+        rendering = render()
+        textfile = open(cipherpath, "a+")
+        textfile.write(rendering)
+        textfile.close()
+
+        print "Dumped:"
+        print rendering
+
+        return True

@@ -15,6 +15,8 @@ from boto.s3.key import Key
 from watchdog.observers import Observer  
 from watchdog.events import PatternMatchingEventHandler  
 
+from m3u8 import M3U8
+
 ###################
 ### Globals
 ###################
@@ -44,6 +46,8 @@ s3 = None
 # Video settings
 VIDEO_BITRATE = '2000k'
 AUDIO_BITRATE = '128k'
+
+playlist = M3U8()
 
 ####################
 ### AWS
@@ -158,12 +162,19 @@ class SegmentHandler(PatternMatchingEventHandler):
         """
         # the file will be processed there
         print event.src_path, event.event_type  # print now only for degug
-        upload_file(event.src_path)
+
+        if '.m3u8' not in event.src_path:
+            upload_file(event.src_path)
 
     def on_modified(self, event):
-        # Do something if file is m3u8?
+
+        global playlist
+
         if '.m3u8' in event.src_path:
-            upload_file(event.src_path)
+                
+
+        m3u8.dump(event.src_path)
+        upload_file(event.src_path)
 
     def on_created(self, event):
         self.process(event)
