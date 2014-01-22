@@ -183,7 +183,7 @@ class EncryptedSegmentHandler(PatternMatchingEventHandler):
         event.src_path
             path/to/observed/file
         """
-        
+
         target = event.src_path
         if '.ts' in event.src_path:
             target = encrypt_segment(event.src_path)
@@ -279,6 +279,22 @@ def encrypt_segment(path):
     cipherfile.close()
 
     return cipherpath
+
+def decrypt_segment(path):
+
+    with open(path) as f:
+        content = f.read()
+
+    head, tail = os.path.split(path)
+    file_path, file_extension = os.path.splitext(path)
+    clearpath = file_path + '.ts'
+
+    cleartext = decrypt("password", content)
+    clearfile = open(clearpath, "a+")
+    clearfile.write(cleartext)
+    clearfile.close()
+
+    return clearpath
 
 ###################
 ### Misc
