@@ -1,11 +1,10 @@
 HEADER = '''#EXTM3U
 #EXT-X-VERSION:3
 #EXT-X-TARGETDURATION:%s
-#EXT-X-MEDIA-SEQUENCE:%s
-'''
+#EXT-X-MEDIA-SEQUENCE:%s'''
 
 FOOTER = '''
-EXT-X-ENDLIST'''
+#EXT-X-ENDLIST'''
 
 class M3U8:
 
@@ -17,7 +16,7 @@ class M3U8:
 
     # Takes an M3U8 file as a string and adds all the contents to this object
     def render(self):
-        render_head = HEADER % (self.target_duration, '1')
+        render_head = HEADER % (self.target_duration, '0')
 
         render_body = ''
         for f in self.files:
@@ -51,7 +50,7 @@ class M3U8:
     def dump_to_file(self, file_path):
 
         rendering = self.render()
-        textfile = open(file_path, "a+")
+        textfile = open(file_path, "w+")
         textfile.write(rendering)
         textfile.close()
 
