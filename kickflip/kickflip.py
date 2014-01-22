@@ -171,9 +171,8 @@ class SegmentHandler(PatternMatchingEventHandler):
         global playlist
 
         if '.m3u8' in event.src_path:
-                
-
-        m3u8.dump(event.src_path)
+            playlist.add_from_file(event.src_path)
+            playlist.dump_to_file(event.src_path)
         upload_file(event.src_path)
 
     def on_created(self, event):
