@@ -164,7 +164,6 @@ class SegmentHandler(PatternMatchingEventHandler):
         upload_file(event.src_path)
 
     def on_modified(self, event):
-        # Do something if file is m3u8?
         if '.m3u8' in event.src_path:
             upload_file(event.src_path)
 
@@ -191,7 +190,6 @@ class EncryptedSegmentHandler(PatternMatchingEventHandler):
         upload_file(target)
 
     def on_modified(self, event):
-        # Do something if file is m3u8?
         if '.m3u8' in event.src_path:
             upload_file(event.src_path)
 
