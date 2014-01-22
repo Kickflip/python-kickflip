@@ -17,7 +17,7 @@ class M3U8:
 
     # Takes an M3U8 file as a string and adds all the contents to this object
     def render(self):
-        render_head = HEADER % (self.target_duration, len(self.files))
+        render_head = HEADER % (self.target_duration, '1')
 
         render_body = ''
         for f in self.files:
