@@ -13,11 +13,14 @@ from boto.s3.connection import Location
 from boto.s3.lifecycle import Lifecycle, Transition, Rule
 from boto.s3.key import Key
 from watchdog.observers import Observer  
-from watchdog.events import PatternMatchingEventHandler  
+from watchdog.events import PatternMatchingEventHandler
+from simplecrypt import encrypt, decrypt  
 
 ###################
 ### Globals
 ###################
+
+USE_CRYPTO = True
 
 connected = False
 connected_aws = False
@@ -168,10 +171,38 @@ class SegmentHandler(PatternMatchingEventHandler):
     def on_created(self, event):
         self.process(event)
 
+class EncryptedSegmentHandler(PatternMatchingEventHandler):
+    patterns = ["*.ts", "*.m3u8"]
+
+    def process(self, event):
+        """
+        event.event_type 
+            'modified' | 'created' | 'moved' | 'deleted'
+        event.is_directory
+            True | False
+        event.src_path
+            path/to/observed/file
+        """
+        
+        target = event.src_path
+        if '.ts' in event.src_path:
+            target = encrypt_segment(event.src_path)
+
+        upload_file(target)
+
+    def on_modified(self, event):
+        # Do something if file is m3u8?
+        if '.m3u8' in event.src_path:
+            upload_file(event.src_path)
+
+    def on_created(self, event):
+        self.process(event)
+
 def stream_video(video_path):
 
     global VIDEO_BITRATE
     global AUDIO_BITRATE
+    global USE_CRYPTO
 
     create_working_directory()
 
@@ -188,7 +219,12 @@ def stream_video(video_path):
         args = args % (video_path, name+nonce)
 
     observer = Observer()
-    observer.schedule(SegmentHandler(), path='./.kickflip')
+    handler = SegmentHandler()
+
+    if USE_CRYPTO:
+        observer.schedule(EncryptedSegmentHandler(), path='./.kickflip')
+    else:
+        observer.schedule(SegmentHandler(), path='./.kickflip')
     
     observer.start()
     time.sleep(3) # This is a fucking hack.
@@ -223,6 +259,26 @@ def upload_file(file_path):
         print k.generate_url(expires_in=300)
 
     return k
+
+###################
+### Crypto
+###################
+
+def encrypt_segment(path):
+
+    with open(path) as f:
+        content = f.read()
+
+    head, tail = os.path.split(path)
+    file_path, file_extension = os.path.splitext(path)
+    cipherpath = file_path + '.cs'
+
+    ciphertext = encrypt("password", content)
+    cipherfile = open(cipherpath, "a+")
+    cipherfile.write(ciphertext)
+    cipherfile.close()
+
+    return cipherpath
 
 ###################
 ### Misc
