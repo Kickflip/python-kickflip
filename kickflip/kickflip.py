@@ -35,13 +35,13 @@ KICKFLIP_CLIENT_ID = ''
 KICKFLIP_CLIENT_SECRET = ''
 
 KICKFLIP_APP_NAME = 'pythonclient'
-KICKFLIP_USER_NAME = 'pythonclient-poopbaby'
+KICKFLIP_USER_NAME = ''
 KICKFLIP_ACCESS_TOKEN = ''
 KICKFLIP_SECRET_ACCESS_TOKEN = ''
 
 # Amazon
-AWS_ACCESS_KEY = 'AKIAIKRPMTDWW35RKP4Q'
-AWS_SECRET_ACCESS_KEY = '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'
+AWS_ACCESS_KEY = ''
+AWS_SECRET_ACCESS_KEY = ''
 
 s3 = None
 
@@ -55,12 +55,14 @@ playlist = M3U8()
 ### AWS
 ####################
 
-def set_aws_keys(AWS_ACCESS_KEY_VAR, AWS_SECRET_ACCESS_KEY_VAR):
+def set_aws_keys(USERNAME, AWS_ACCESS_KEY_VAR, AWS_SECRET_ACCESS_KEY_VAR):
     global AWS_ACCESS_KEY
     global AWS_SECRET_ACCESS_KEY
+    global KICKFLIP_USER_NAME
 
     AWS_ACCESS_KEY = AWS_ACCESS_KEY_VAR
     AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY_VAR
+    KICKFLIP_USER_NAME = USERNAME
 
     return True
 
@@ -94,11 +96,13 @@ def connect():
     if not connected:
 
         response = requests.post('https://funkcity.ngrok.com/o/token/', {'grant_type': 'client_credentials', 'client_id': KICKFLIP_CLIENT_ID, 'client_secret': KICKFLIP_CLIENT_SECRET})
+        if response.status_code != 200:
+            raise Exception("Couldn't connect to Kickflip. Something's wrong..")
         token = response.json()
         client = MobileApplicationClient(KICKFLIP_CLIENT_ID)
         kickflip_session = OAuth2Session(KICKFLIP_CLIENT_ID, client=client, token=token)
-        kickflip_session.get(KICKFLIP_API_URL + 'hello/')
         connected = True
+        print "CONNECTED"
 
     return connected
 
@@ -127,13 +131,20 @@ def get_account_status(username):
     return ''
 
 def create_user(username):
-    return ''
+
+    global connected
+    global kickflip_session
+
+    if not connected:
+        raise Exception("No session connected. Maybe try calling connect() first?")
+
+    user_response = kickflip_session.post(KICKFLIP_API_URL + 'new/user/', {'username': username})
+    return user_response.json()
 
 def get_user(username):
     return ''
 
 def start_stream(file_path, stream_name=None, private=False):
-    connect()
     stream_video(file_path)
     return ''
 

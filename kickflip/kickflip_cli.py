@@ -23,14 +23,17 @@ def main():
 
     read_keys_cli = vargs['keys']
     client_id, client_secret = load_keys(read_keys_cli)
-    username, user_access_key, user_secret_access_key = load_or_create_user(getpass.getuser())
 
     file_path = vargs['file_path']
-    puts(colored.green('Streaming') + ': ' + file_path)
 
     kickflip.set_keys(client_id, client_secret)
-    #kickflip.connect()
-    #kickflip.set_user(username, user_access_key, user_secret_access_key)
+    print "Connecting.."
+    kickflip.connect()
+
+    print "Loading user.."
+    load_or_create_user(getpass.getuser())
+    
+    puts(colored.green('Streaming') + ': ' + file_path)
     kickflip.start_stream(file_path)
 
 def load_keys(read_cli=False):
@@ -58,14 +61,19 @@ def load_or_create_user(username):
         config_json = resources.user.read('config.json')
 
     settings = json.loads(config_json)
+    settings = {}
+
     if not settings.has_key('username'):
         settings['username'] = username
         resources.user.write('config.json', json.dumps(settings, sort_keys=True))
     if not settings.has_key('user_access_key'):
         user = kickflip.create_user(username)
-        settings['user_access_key'] = 1234
-        settings['user_secret_access_key'] = 1234
+        settings['username'] = user['name']
+        settings['user_access_key'] = user['aws_access_key']
+        settings['user_secret_access_key'] = user['aws_secret_key']
         resources.user.write('config.json', json.dumps(settings, sort_keys=True))
+
+    kickflip.set_aws_keys(settings['username'], settings['user_access_key'], settings['user_secret_access_key'])
 
     return settings['username'], settings['user_access_key'], settings['user_secret_access_key']
 
