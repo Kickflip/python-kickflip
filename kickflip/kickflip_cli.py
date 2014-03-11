@@ -52,6 +52,10 @@ def load_keys(read_cli=False):
         config_json = resources.user.read('config.json')
 
     settings = json.loads(config_json)
+    
+    # Nuke the settings if reading from CLI.
+    if read_cli:
+        settings = {}
 
     if not settings.has_key('client_id') or read_cli:
         settings['client_id'] = raw_input("What is your client ID? ").strip()
@@ -82,7 +86,8 @@ def load_or_create_user(username):
         settings['user_uuid'] = user['uuid']
         resources.user.write('config.json', json.dumps(settings, sort_keys=True))
 
-    kickflip.set_keys(settings['username'], settings['user_uuid'], settings['user_access_key'], settings['user_secret_access_key'])
+    kickflip.set_aws_keys(settings['username'], settings['user_access_key'], settings['user_secret_access_key'])
+    kickflip.set_uuid(settings['user_uuid'])
 
     return settings['username'], settings['user_uuid'], settings['user_access_key'], settings['user_secret_access_key']
 

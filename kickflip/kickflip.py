@@ -35,9 +35,9 @@ KICKFLIP_API_URL = KICKFLIP_BASE_URL + '/api/'
 KICKFLIP_CLIENT_ID = ''
 KICKFLIP_CLIENT_SECRET = ''
 
-KICKFLIP_APP_NAME = 'pythonclient'
+KICKFLIP_APP_NAME = ''
 KICKFLIP_USER_NAME = ''
-KICKFLIP_USER_NAME = 'UUID'
+KICKFLIP_UUID = ''
 KICKFLIP_ACCESS_TOKEN = ''
 KICKFLIP_SECRET_ACCESS_TOKEN = ''
 
@@ -57,7 +57,7 @@ playlist = M3U8()
 ### AWS
 ####################
 
-def set_keys(USERNAME, UUID, AWS_ACCESS_KEY_VAR, AWS_SECRET_ACCESS_KEY_VAR):
+def set_aws_keys(USERNAME, AWS_ACCESS_KEY_VAR, AWS_SECRET_ACCESS_KEY_VAR):
     global AWS_ACCESS_KEY
     global AWS_SECRET_ACCESS_KEY
     global KICKFLIP_USER_NAME
@@ -65,7 +65,6 @@ def set_keys(USERNAME, UUID, AWS_ACCESS_KEY_VAR, AWS_SECRET_ACCESS_KEY_VAR):
     AWS_ACCESS_KEY = AWS_ACCESS_KEY_VAR
     AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY_VAR
     KICKFLIP_USER_NAME = USERNAME
-    KICKFLIP_UUID = UUID
 
     return True
 
@@ -115,6 +114,13 @@ def set_keys(client_id, client_secret):
 
     KICKFLIP_CLIENT_ID = client_id
     KICKFLIP_CLIENT_SECRET = client_secret
+
+def set_uuid(uuid):
+
+    global KICKFLIP_UUID
+    KICKFLIP_UUID = uuid
+
+    return True
 
 def set_access_tokens():
     global KICKFLIP_ACCESS_TOKEN
