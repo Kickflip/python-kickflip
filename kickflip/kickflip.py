@@ -92,8 +92,6 @@ def connect(client_id, client_secret):
 
         kickflip_session = OAuth2Session(KICKFLIP_CLIENT_ID, token=KICKFLIP_CLIENT_SECRET)
         kickflip_session.authorization_url(KICKFLIP_BASE_URL + 'o/authorize/')
-        import pdb
-        pdb.set_trace()
 
         connected = True
 
@@ -124,10 +122,6 @@ def get_account_status(username):
     return ''
 
 def create_user(username):
-
-
-
-
     return ''
 
 def get_user(username):
