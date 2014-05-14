@@ -28,14 +28,16 @@ kickflip_session = None
 
 # URLs
 KICKFLIP_BASE_URL = 'https://funkcity.ngrok.com/'
+#KICKFLIP_BASE_URL = 'https://api.kickflip.io'
 KICKFLIP_API_URL = KICKFLIP_BASE_URL + '/api/'
 
 # Kickflip Keys
 KICKFLIP_CLIENT_ID = ''
 KICKFLIP_CLIENT_SECRET = ''
 
-KICKFLIP_APP_NAME = 'pythonclient'
+KICKFLIP_APP_NAME = ''
 KICKFLIP_USER_NAME = ''
+KICKFLIP_UUID = ''
 KICKFLIP_ACCESS_TOKEN = ''
 KICKFLIP_SECRET_ACCESS_TOKEN = ''
 
@@ -95,7 +97,7 @@ def connect():
 
     if not connected:
 
-        response = requests.post('https://funkcity.ngrok.com/o/token/', {'grant_type': 'client_credentials', 'client_id': KICKFLIP_CLIENT_ID, 'client_secret': KICKFLIP_CLIENT_SECRET})
+        response = requests.post(KICKFLIP_BASE_URL + '/o/token/', {'grant_type': 'client_credentials', 'client_id': KICKFLIP_CLIENT_ID, 'client_secret': KICKFLIP_CLIENT_SECRET})
         if response.status_code != 200:
             raise Exception("Couldn't connect to Kickflip. Something's wrong..")
         token = response.json()
@@ -112,6 +114,13 @@ def set_keys(client_id, client_secret):
 
     KICKFLIP_CLIENT_ID = client_id
     KICKFLIP_CLIENT_SECRET = client_secret
+
+def set_uuid(uuid):
+
+    global KICKFLIP_UUID
+    KICKFLIP_UUID = uuid
+
+    return True
 
 def set_access_tokens():
     global KICKFLIP_ACCESS_TOKEN
@@ -145,6 +154,9 @@ def get_user(username):
     return ''
 
 def start_stream(file_path, stream_name=None, private=False):
+    user_response = kickflip_session.post(KICKFLIP_API_URL + 'stream/start/', {'username': KICKFLIP_USERNAME})
+    import pdb
+    pdb.set_trace()
     stream_video(file_path)
     return ''
 
@@ -199,7 +211,7 @@ def stream_video(video_path):
     name = tail.split('.')[0]
 
     nonce = '-' + ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(5))
-    
+
     if '.avi' in video_path:
         args = "-i %s  -vcodec h264 -b %s -acodec libfaac -ab %s -f hls ./.kickflip/%s.m3u8"
         args = args % (video_path, VIDEO_BITRATE, AUDIO_BITRATE, name+nonce)
@@ -209,7 +221,7 @@ def stream_video(video_path):
 
     observer = Observer()
     observer.schedule(SegmentHandler(), path='./.kickflip')
-    
+
     observer.start()
     time.sleep(3) # This is a fucking hack.
     process = envoy.run('ffmpeg ' + args)
