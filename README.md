@@ -3,6 +3,12 @@
 
 It's a Kickflip library and command line client!
 
+## Status!
+
+This library is a **work in progress!** Don't use it for anything yet.
+
+The [iOS](https://github.com/Kickflip/kickflip-ios-sdk) and [Android](https://github.com/Kickflip/kickflip-android-sdk) SDKs are ready already, however!
+
 ## Command Line Usage
 
 0. First, you'll need a [Kickflip](http://kickflip.io) account and an application. You'll also need a recent version of _ffmpeg_ installed.
