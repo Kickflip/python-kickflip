@@ -227,6 +227,14 @@ def start_stream(file_path, stream_name=None, private=False):
     return ''
 
 
+def pause_stream(stream_name):
+    return ''
+
+
+def stop_stream():
+    return ''
+
+
 @auth_required
 def get_stream_info(stream_id):
     """
@@ -243,13 +251,47 @@ def get_stream_info(stream_id):
     return response.json()
 
 
-def pause_stream(stream_name):
-    return ''
+@auth_required
+def get_stream_by_location(uuid, lat, lon, radius=0):
+    """
+    Uses the `/search/location` endpoint.
+    takes the stream_id as a parameter.
+
+    e.g. uuid="", username="bej48snvvthy"
+
+    """
+    endpoint = KICKFLIP_API_URL + '/search/location/'
+    payload = ({
+        'uuid': uuid,
+        'lat': lat,
+        'lon': lon
+    })
+
+    if radius != 0:
+        payload['radius'] = radius
+
+    response = kickflip_session.post(endpoint, payload)
+
+    return response.json()
 
 
-def stop_stream():
-    return ''
+@auth_required
+def get_stream_credentials(username, password):
+    """
+    Uses the `/user/uuid` endpoint.
+    takes a valid username and password as parameter.
+    It will return all the necessary credentials to use the API
+    and the upload endpoints.
 
+    e.g. username="bej48snvvthy", password=""
+
+    """
+    endpoint = KICKFLIP_API_URL + '/user/uuid/'
+    payload = {'username': username, 'password': password}
+
+    response = kickflip_session.post(endpoint, payload)
+
+    return response.json()
 
 ####################
 ### FFMPEG
