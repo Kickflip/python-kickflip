@@ -13,8 +13,8 @@ from requests_oauthlib import OAuth2Session
 from boto.s3.connection import Location
 from boto.s3.lifecycle import Lifecycle, Transition, Rule
 from boto.s3.key import Key
-from watchdog.observers import Observer  
-from watchdog.events import PatternMatchingEventHandler  
+from watchdog.observers import Observer
+from watchdog.events import PatternMatchingEventHandler
 
 from m3u8 import M3U8
 
@@ -28,7 +28,7 @@ kickflip_session = None
 
 # URLs
 KICKFLIP_BASE_URL = 'https://funkcity.ngrok.com/'
-#KICKFLIP_BASE_URL = 'https://api.kickflip.io'
+# KICKFLIP_BASE_URL = 'https://api.kickflip.io'
 KICKFLIP_API_URL = KICKFLIP_BASE_URL + '/api/'
 
 # Kickflip Keys
@@ -57,6 +57,7 @@ playlist = M3U8()
 ### AWS
 ####################
 
+
 def set_aws_keys(USERNAME, AWS_ACCESS_KEY_VAR, AWS_SECRET_ACCESS_KEY_VAR):
     global AWS_ACCESS_KEY
     global AWS_SECRET_ACCESS_KEY
@@ -67,6 +68,7 @@ def set_aws_keys(USERNAME, AWS_ACCESS_KEY_VAR, AWS_SECRET_ACCESS_KEY_VAR):
     KICKFLIP_USER_NAME = USERNAME
 
     return True
+
 
 def connect_aws():
 
@@ -81,12 +83,15 @@ def connect_aws():
 
     return connected_aws
 
+
 def upload_file(filename):
     return True
+
 
 ###################
 ### Kickflip Auth
 ###################
+
 
 def connect():
     global connected
@@ -108,6 +113,7 @@ def connect():
 
     return connected
 
+
 def set_keys(client_id, client_secret):
     global KICKFLIP_CLIENT_ID
     global KICKFLIP_CLIENT_SECRET
@@ -115,12 +121,14 @@ def set_keys(client_id, client_secret):
     KICKFLIP_CLIENT_ID = client_id
     KICKFLIP_CLIENT_SECRET = client_secret
 
+
 def set_uuid(uuid):
 
     global KICKFLIP_UUID
     KICKFLIP_UUID = uuid
 
     return True
+
 
 def set_access_tokens():
     global KICKFLIP_ACCESS_TOKEN
@@ -136,8 +144,10 @@ def set_access_tokens():
 ### Kickflip.io API
 #####################
 
+
 def get_account_status(username):
     return ''
+
 
 def create_user(username):
 
@@ -150,8 +160,10 @@ def create_user(username):
     user_response = kickflip_session.post(KICKFLIP_API_URL + 'new/user/', {'username': username})
     return user_response.json()
 
+
 def get_user(username):
     return ''
+
 
 def start_stream(file_path, stream_name=None, private=False):
     user_response = kickflip_session.post(KICKFLIP_API_URL + 'stream/start/', {'username': KICKFLIP_USERNAME})
@@ -160,22 +172,26 @@ def start_stream(file_path, stream_name=None, private=False):
     stream_video(file_path)
     return ''
 
+
 def pause_stream(stream_name):
     return ''
+
 
 def stop_stream():
     return ''
 
+
 ####################
 ### FFMPEG
 ####################
+
 
 class SegmentHandler(PatternMatchingEventHandler):
     patterns = ["*.ts", "*.m3u8"]
 
     def process(self, event):
         """
-        event.event_type 
+        event.event_type
             'modified' | 'created' | 'moved' | 'deleted'
         event.is_directory
             True | False
@@ -200,6 +216,7 @@ class SegmentHandler(PatternMatchingEventHandler):
     def on_created(self, event):
         self.process(event)
 
+
 def stream_video(video_path):
 
     global VIDEO_BITRATE
@@ -223,16 +240,18 @@ def stream_video(video_path):
     observer.schedule(SegmentHandler(), path='./.kickflip')
 
     observer.start()
-    time.sleep(3) # This is a fucking hack.
+    time.sleep(3)  # This is a fucking hack.
     process = envoy.run('ffmpeg ' + args)
     observer.stop()
 
     upload_file(video_path)
     return ''
 
+
 ####################
 ### AWS
 ####################
+
 
 def upload_file(file_path):
 
@@ -243,7 +262,7 @@ def upload_file(file_path):
 
     bucket = None
     s3 = boto.connect_s3(AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY)
-    bucket = s3.get_bucket(KICKFLIP_APP_NAME)#, validate=False)
+    bucket = s3.get_bucket(KICKFLIP_APP_NAME)  # , validate=False)
 
     k = Key(bucket)
     head, tail = os.path.split(file_path)
@@ -256,9 +275,11 @@ def upload_file(file_path):
 
     return k
 
+
 ###################
 ### Misc
 ###################
+
 
 def create_working_directory():
     if not os.path.exists('./.kickflip'):
