@@ -219,8 +219,23 @@ def get_user(username):
     return ''
 
 
-def start_stream(file_path, stream_name=None, private=False):
-    user_response = kickflip_session.post(KICKFLIP_API_URL + 'stream/start/', {'username': KICKFLIP_USERNAME})
+def start_stream(file_path, stream_name=None, private=False, username=''):
+    """
+    Uses the `/stream/start` endpoint taking the username as a parameter.
+    If you specify no username, it will fallback to the default
+    `KICKFLIP_USER_NAME` set in the set_aws_keys() function.
+
+    e.g. username="banana1"
+
+    """
+    endpoint = KICKFLIP_API_URL + '/stream/start/'
+    payload = {'username': KICKFLIP_USER_NAME}
+
+    if username:
+        payload['username'] = username
+
+    user_response = kickflip_session.post(endpoint, payload)
+
     import pdb
     pdb.set_trace()
     stream_video(file_path)
