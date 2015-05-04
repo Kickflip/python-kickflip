@@ -293,6 +293,34 @@ def get_stream_credentials(username, password):
 
     return response.json()
 
+
+@auth_required
+def search_by_keyword(keyword="", uuid=""):
+    """
+    Uses the `/search` endpoint.
+    takes a user uuid and a keyword.
+    If you specify no `uuid`, the search will not show private streams?
+    If the keyword is empty, it will return all the streams from the app.
+
+    e.g. uuid="e9c3d27e-406b-4f4a-9b87-6d3460c60ca6", keyword=""
+
+    reply: {
+        u'total_items': 3,
+        u'next_page_available': False,
+        u'success': True, u'page_number': 1,
+        u'streams': [...],
+        u'results_per_page': 25
+    }
+
+    """
+    endpoint = KICKFLIP_API_URL + '/search/'
+    payload = {'uuid': uuid, 'keyword': keyword}
+
+    response = kickflip_session.post(endpoint, payload)
+
+    return response.json()
+
+
 ####################
 ### FFMPEG
 ####################
