@@ -186,8 +186,8 @@ def create_user(username, password=""):
     TODO: What happens when you specify no password?
 
     e.g. username="banana1"
-    """
 
+    """
     endpoint = KICKFLIP_API_URL + '/user/new'
     payload = {'username': username}
 
@@ -225,6 +225,22 @@ def start_stream(file_path, stream_name=None, private=False):
     pdb.set_trace()
     stream_video(file_path)
     return ''
+
+
+@auth_required
+def get_stream_info(stream_id):
+    """
+    Uses the `/stream/info` endpoint taking the stream_id as a parameter.
+
+    e.g. stream_id="e83a515e-fe69-4b19-afba-20f30d56b719"
+
+    """
+    endpoint = KICKFLIP_API_URL + '/stream/info/'
+    payload = {'stream_id': stream_id}
+
+    response = kickflip_session.post(endpoint, payload)
+
+    return response.json()
 
 
 def pause_stream(stream_name):
