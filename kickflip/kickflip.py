@@ -199,6 +199,22 @@ def create_user(username, password=""):
     return user_response.json()
 
 
+@auth_required
+def get_user_info(username):
+    """
+    Uses the `/user/info` endpoint taking the username as a parameter.
+
+    e.g. username="banana1"
+
+    """
+    endpoint = KICKFLIP_API_URL + '/user/info/'
+    payload = {'username': username}
+
+    user_response = kickflip_session.post(endpoint, payload)
+
+    return user_response.json()
+
+
 def get_user(username):
     return ''
 
