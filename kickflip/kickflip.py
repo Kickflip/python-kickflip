@@ -353,8 +353,8 @@ class SegmentHandler(PatternMatchingEventHandler):
         event.src_path
             path/to/observed/file
         """
-        # the file will be processed there
-        print event.src_path, event.event_type  # print now only for degug
+        # Process the file there
+        print event.src_path, event.event_type  # Print for degug
 
         if '.m3u8' not in event.src_path:
             upload_file(event.src_path)
@@ -382,10 +382,14 @@ def stream_video(video_path):
     head, tail = os.path.split(video_path)
     name = tail.split('.')[0]
 
-    nonce = '-' + ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(5))
+    alphanum = string.ascii_uppercase + string.digits
+
+    nonce = '-' + ''.join(random.choice(alphanum) for x in range(5))
 
     if '.avi' in video_path:
-        args = "-i %s  -vcodec h264 -b %s -acodec libfaac -ab %s -f hls ./.kickflip/%s.m3u8"
+        args = "-i %s  -vcodec h264 "
+        args += "-b %s -acodec libfaac"
+        args += "-ab %s -f hls ./.kickflip/%s.m3u8"
         args = args % (video_path, VIDEO_BITRATE, AUDIO_BITRATE, name+nonce)
     else:
         args = "-i %s -f hls -codec copy ./.kickflip/%s.m3u8"
