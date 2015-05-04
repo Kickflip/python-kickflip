@@ -19,7 +19,7 @@ from watchdog.events import PatternMatchingEventHandler
 from m3u8 import M3U8
 
 ###################
-### Globals
+# Globals
 ###################
 
 connected = False
@@ -54,7 +54,7 @@ AUDIO_BITRATE = '128k'
 playlist = M3U8()
 
 ####################
-### AWS
+# AWS
 ####################
 
 
@@ -89,7 +89,7 @@ def upload_file(filename):
 
 
 ###################
-### Kickflip Auth
+# Kickflip Auth
 ###################
 
 
@@ -170,7 +170,7 @@ def set_access_tokens():
     return ''
 
 ####################
-### Kickflip.io API
+# Kickflip.io API
 #####################
 
 
@@ -337,7 +337,7 @@ def search_by_keyword(keyword="", uuid=""):
 
 
 ####################
-### FFMPEG
+# FFMPEG
 ####################
 
 
@@ -408,7 +408,7 @@ def stream_video(video_path):
 
 
 ####################
-### AWS
+# AWS
 ####################
 
 
@@ -436,7 +436,7 @@ def upload_file(file_path):
 
 
 ###################
-### Misc
+# Misc
 ###################
 
 
