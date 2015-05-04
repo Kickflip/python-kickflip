@@ -131,6 +131,18 @@ def connect():
     return connected
 
 
+def auth_required(f):
+    global connected
+    global kickflip_session
+
+    def g(*args, **kwargs):
+        if not connected:
+            raise Exception("No session connected. connect() first?")
+        return f(*args, **kwargs)
+
+    return g
+
+
 def set_keys(client_id, client_secret):
     global KICKFLIP_CLIENT_ID
     global KICKFLIP_CLIENT_SECRET
@@ -166,15 +178,24 @@ def get_account_status(username):
     return ''
 
 
-def create_user(username):
+@auth_required
+def create_user(username, password=""):
+    """
+    Uses the `/user/new` endpoint taking the username as a parameter.
 
-    global connected
-    global kickflip_session
+    TODO: What happens when you specify no password?
 
-    if not connected:
-        raise Exception("No session connected. Maybe try calling connect() first?")
+    e.g. username="banana1"
+    """
 
-    user_response = kickflip_session.post(KICKFLIP_API_URL + 'new/user/', {'username': username})
+    endpoint = KICKFLIP_API_URL + '/user/new'
+    payload = {'username': username}
+
+    if password:
+        payload['password'] = password
+
+    user_response = kickflip_session.post(endpoint, payload)
+
     return user_response.json()
 
 
