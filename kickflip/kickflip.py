@@ -102,12 +102,29 @@ def connect():
 
     if not connected:
 
-        response = requests.post(KICKFLIP_BASE_URL + '/o/token/', {'grant_type': 'client_credentials', 'client_id': KICKFLIP_CLIENT_ID, 'client_secret': KICKFLIP_CLIENT_SECRET})
+        endpoint = KICKFLIP_BASE_URL + '/o/token/'
+
+        payload = ({
+            'client_secret': KICKFLIP_CLIENT_SECRET,
+            'grant_type': 'client_credentials',
+            'client_id': KICKFLIP_CLIENT_ID,
+            })
+
+        response = requests.post(endpoint, payload)
+
         if response.status_code != 200:
-            raise Exception("Couldn't connect to Kickflip. Something's wrong..")
+            raise Exception("Error: Couldn't connect to Kickflip...")
+
         token = response.json()
+
         client = MobileApplicationClient(KICKFLIP_CLIENT_ID)
-        kickflip_session = OAuth2Session(KICKFLIP_CLIENT_ID, client=client, token=token)
+
+        kickflip_session = OAuth2Session(
+            KICKFLIP_CLIENT_ID,
+            client=client,
+            token=token
+        )
+
         connected = True
         print "CONNECTED"
 
