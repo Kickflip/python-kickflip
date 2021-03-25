@@ -1,4 +1,4 @@
-PyYAML==3.10
+PyYAML==5.4
 argh==0.24.1
 argparse==1.2.1
 args==0.1.0
